@@ -1,3 +1,5 @@
+import { resolve } from "path"
+
 type User={
     id:number,
     name:string,
@@ -7,6 +9,9 @@ type User={
 }
 
 export default async function UserServer(){
+    await new Promise((resolve)=>{
+        setTimeout(resolve, 2000)  // Simulate delay for server-side rendering
+    })
     const response = await fetch('https://jsonplaceholder.typicode.com/users')
     const users = await response.json()
 
