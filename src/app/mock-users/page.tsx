@@ -1,5 +1,6 @@
-import { resolve } from "path";
-import { revalidatePath } from "next/cache" 
+// import { resolve } from "path";
+import { revalidatePath } from "next/cache";
+import {auth,currentUser} from "@clerk/nextjs/server"
 
 type MockUser = {
   id: number;
@@ -9,6 +10,13 @@ type MockUser = {
 };
 
 export default async function MockUsers() {
+  const authObj=await auth()
+  const userObj=await currentUser()
+  console.log({
+    userObj,
+    authObj,
+  })
+
   // await new Promise((resolve)=>{
   //     setTimeout(resolve, 2000)  // Simulate delay for server-side rendering
   // })
@@ -17,21 +25,23 @@ export default async function MockUsers() {
   );
   const users = await response.json();
 
-  async function addUser(formData:FormData){
-    "use server"
-    const name=formData.get("name")
-    const res=await fetch("https://679c6d4987618946e65225da.mockapi.io/users",{
+  async function addUser(formData: FormData) {
+    "use server";
+    const name = formData.get("name");
+    const res = await fetch(
+      "https://679c6d4987618946e65225da.mockapi.io/users",
+      {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({name}),
-    }
-)
-const newUser=await res.json() 
-    revalidatePath("/mock-users")  // Revalidate the "/users" route after adding a new user
-console.log(newUser)
-}
+        body: JSON.stringify({ name }),
+      }
+    );
+    const newUser = await res.json();
+    revalidatePath("/mock-users"); // Revalidate the "/users" route after adding a new user
+    console.log(newUser);
+  }
 
   return (
     <div className="py-10">
@@ -45,7 +55,6 @@ console.log(newUser)
         />
         <button
           type="submit"
-          
           className="bg-blue-500 p-2 rounded-lg hover:bg-green-900"
         >
           Add User
